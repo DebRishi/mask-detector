@@ -87,13 +87,13 @@ def predict_from_data_uri(data_uri):
     
     # The model is capable for analysing multiple faces at the same time. But we will consider on the first face that get detected for simplification
     if len(preds) == 0:
-        return "No faces detected"
+        return "NO_FACE_DETECTED"
     else:
         (mask, withoutMask) = preds[0]
         if mask > withoutMask:
-            return "Mask detected on face"
+            return "MASK_DETECTED"
         else:
-            return "No mask detected on face"
+            return "NO_MASK_DETECTED"
 
 # Create a Flask web app
 app = Flask(__name__)
@@ -113,18 +113,16 @@ def predict():
 
         # Generating response
         response_data = {
-            "message": predict_from_data_uri(data_uri),
-            "status": "Success"
+            "status": predict_from_data_uri(data_uri)
         }
         return jsonify(response_data), 200
 
     except Exception as e:
         # Generating error response
         response_data = {
-            "message": str(e),
-            "status": "Error"
+            "status": "INTERNAL_ERROR"
         }
-        return jsonify(response_data), 400
+        return jsonify(response_data), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
