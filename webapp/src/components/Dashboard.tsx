@@ -1,4 +1,4 @@
-import { GithubIcon } from "lucide-react";
+import { GithubIcon, Info } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
 
@@ -6,6 +6,7 @@ const Dashboard = () => {
 
     const webcamRef = useRef<Webcam>(null);
     const [status, setStatus] = useState("CONNECTING");
+    const [showInfo, setShowInfo] = useState(false);
 
     useEffect(() => {
         
@@ -32,6 +33,8 @@ const Dashboard = () => {
                     setStatus("CONNECTING");
                     setTimeout(fetchData, 1000);
                 }
+            } else {
+                setTimeout(fetchData, 1000);
             }
         }
 
@@ -48,12 +51,24 @@ const Dashboard = () => {
             <header className="h-14 flex items-center justify-between">
                 <div className="p-4">
                     <button
-                        className="flex items-center text-zinc-400 hover:text-zinc-200 transition"
+                        className="flex items-center text-zinc-400 hover:text-zinc-200"
                         onClick={openLink}
                     >
                         <GithubIcon />
-                        <p className="p-2 text-md ">Welcome to the Mask Detector</p>
+                        <p className="p-2 text-md">Welcome to the Mask Detector</p>
                     </button>
+                </div>
+                <div className="p-4 relative group">
+                    <Info className="text-zinc-400 hover:text-zinc-200 cursor-pointer"
+                        onMouseOver={() => setShowInfo(true)}
+                        onMouseOut={() => setShowInfo(false)}
+                    />
+                    <div 
+                        className="absolute right-1 bg-black text-zinc-400 w-[300px] p-2 mt-1 text-center rounded-lg"
+                        hidden={!showInfo}
+                    >
+                        This application sends a series of HTTP requests at regular time intervals instead of using WebSockets, which could potentially result in delayed response depending on your network.
+                    </div>
                 </div>
             </header>
             <Webcam
