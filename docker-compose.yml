@@ -1,13 +1,13 @@
 services:
   server:
-    build: .
+    build: ./server
     restart: always
     ports:
       - 5050:5000
-  # webapp:
-  #   build: ./webapp
-  #   restart: always
-  #   ports:
-  #     - 5555:3000
-  #   depends_on:
-  #     - server
+  webapp:
+    build: ./webapp
+    restart: always
+    ports:
+      - 5555:3000
+    depends_on:
+      - server
