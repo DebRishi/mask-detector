@@ -76,12 +76,12 @@ def predict_from_data_uri(data_uri):
     image = imutils.resize(image, width=400)
 
     # load the face detector model from disk
-    prototxtPath = r"../model/face_detector/deploy.prototxt"
-    weightsPath = r"../model/face_detector/res10_300x300_ssd_iter_140000.caffemodel"
+    prototxtPath = r"./model/face_detector/deploy.prototxt"
+    weightsPath = r"./model/face_detector/res10_300x300_ssd_iter_140000.caffemodel"
     faceNet = cv2.dnn.readNet(prototxtPath, weightsPath)
     
     # load the mask detector model from disk
-    maskNet = load_model("../model/mask_detector.model")
+    maskNet = load_model("./model/mask_detector.model")
     
     preds = dectect_and_predict(image, faceNet, maskNet)
     
@@ -125,4 +125,4 @@ def predict():
         return jsonify(response_data), 500
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host="0.0.0.0", port=5000)

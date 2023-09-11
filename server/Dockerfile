@@ -1,9 +1,16 @@
-FROM python:3.10.12-alpine3.18
+FROM tensorflow/tensorflow:2.13.0
+
+RUN apt update
+RUN apt install -y libgl1-mesa-glx
 
 WORKDIR /app
 
-COPY . /app
+COPY requirements.txt /app
 
 RUN pip install -r requirements.txt
 
-CMD [ "python", "server.py" ]
+COPY . /app
+
+EXPOSE 5000
+
+CMD python server.py
