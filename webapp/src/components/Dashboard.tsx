@@ -8,12 +8,13 @@ const Dashboard = () => {
     const [status, setStatus] = useState("CONNECTING");
 
     useEffect(() => {
-
+        
         const fetchData = async () => {
-            if (webcamRef.current) {
+            
+            const screenshot = webcamRef.current?.getScreenshot();
+            
+            if (screenshot) {
                 try {
-                    const screenshot = webcamRef.current?.getScreenshot();
-
                     const response = await fetch(process.env.REACT_APP_PREDICT_URL as string, {
                         method: 'POST',
                         headers: {
@@ -29,12 +30,14 @@ const Dashboard = () => {
                 } catch (error) {
                     console.error("Error while connecting:", error);
                     setStatus("CONNECTING");
+                    setTimeout(fetchData, 1000);
                 }
             }
         }
 
         setTimeout(fetchData, 1000);
-    }, [])
+        
+    }, [webcamRef])
 
     const openLink = () => {
         window.open(process.env.REACT_APP_PROJECT_URL, '_blank');
