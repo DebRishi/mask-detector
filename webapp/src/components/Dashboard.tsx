@@ -1,3 +1,4 @@
+import { GithubIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import Webcam from "react-webcam";
 
@@ -6,57 +7,51 @@ const Dashboard = () => {
     const webcamRef = useRef<Webcam>(null);
     const [status, setStatus] = useState("CONNECTING");
 
-    const fetchData = async (screenshot: string) => {
-        try {
-            const response = await fetch("http://127.0.0.1:5000/predict", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    data_uri: screenshot
-                }),
-            });
-            if (!response.ok) {
-                setStatus("SERVER_ERROR");
-            }
-            const jsonResponse = await response.json();
-            console.log(jsonResponse.status);
-            setStatus(jsonResponse.status);
-        } catch (error) {
-            console.error("Error while connecting:", error);
-            setStatus("CONNECTING");
-        }
-    }
-
     useEffect(() => {
 
-        let isMounted = true;
-        
-        const continuousDataFetch = async () => {
-            
-            if (!isMounted) {
-                return;
+        const fetchData = async () => {
+            if (webcamRef.current) {
+                try {
+                    const screenshot = webcamRef.current?.getScreenshot();
+
+                    const response = await fetch(process.env.REACT_APP_PREDICT_URL as string, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            data_uri: screenshot
+                        }),
+                    });
+                    const jsonBody = await response.json();
+                    setStatus(jsonBody.status);
+                    fetchData();
+                } catch (error) {
+                    console.error("Error while connecting:", error);
+                    setStatus("CONNECTING");
+                }
             }
-            
-            const screenshot = webcamRef.current?.getScreenshot();
-            if (screenshot) {
-                await fetchData(screenshot);
-            }
-            
-            continuousDataFetch();
         }
-        continuousDataFetch();
-        
-        return () => {
-            isMounted = false;
-        }
-    }, []);
+
+        setTimeout(fetchData, 1000);
+    }, [])
+
+    const openLink = () => {
+        window.open(process.env.REACT_APP_PROJECT_URL, '_blank');
+    };
 
     return (
         <div className="flex flex-col bg-zinc-800 mx-1 sm:w-[600px] rounded-xl">
-            <header className="h-14">
-
+            <header className="h-14 flex items-center justify-between">
+                <div className="p-4">
+                    <button
+                        className="flex items-center text-zinc-400 hover:text-zinc-200 transition"
+                        onClick={openLink}
+                    >
+                        <GithubIcon />
+                        <p className="p-2 text-md ">Welcome to the Mask Detector</p>
+                    </button>
+                </div>
             </header>
             <Webcam
                 ref={webcamRef}
